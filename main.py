@@ -10,6 +10,7 @@ import uvicorn
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 # Configure SQLAlchemy
 DATABASE_URL = "sqlite:///./slugs.db"
@@ -33,6 +34,15 @@ app = FastAPI()
 # Configure templates
 templates = Jinja2Templates(directory="templates")
 
+# Adicionar middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 def generate_slug(length=6):
     """Generate a random slug of specified length"""
     characters = string.ascii_letters + string.digits
@@ -48,7 +58,7 @@ def get_db():
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"status": "ok", "message": "API is running"}
 
 @app.get("/generate-slug")
 async def generate_new_slug():
