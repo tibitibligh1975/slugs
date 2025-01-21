@@ -8,7 +8,7 @@ import string
 import random
 import uvicorn
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
 import os
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,7 +31,10 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Configure templates
+# Montar arquivos estáticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Configurar templates
 templates = Jinja2Templates(directory="templates")
 
 # Adicionar middleware CORS
@@ -56,7 +59,7 @@ def get_db():
     finally:
         db.close()
 
-@app.get("/")
+@app.get("/api")
 async def root():
     return {"status": "ok", "message": "API is running"}
 
@@ -118,9 +121,8 @@ async def use_slug(slug: str):
     
     return {"message": "Slug successfully used"}
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    """Render the home page"""
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/content/{slug}")
@@ -157,6 +159,10 @@ async def view_content(request: Request, slug: str):
     db.close()
     
     return templates.TemplateResponse("protected_content.html", {"request": request})
+
+@app.get("/pagina/{nome}", response_class=HTMLResponse)
+async def pagina(request: Request, nome: str):
+    return templates.TemplateResponse(f"{nome}.html", {"request": request})
 
 # Add documentation about how to run the system
 """
