@@ -31,6 +31,14 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# Criar diretório static se não existir
+if not os.path.exists("static"):
+    os.makedirs("static")
+
+# Criar diretório templates se não existir
+if not os.path.exists("templates"):
+    os.makedirs("templates")
+
 # Montar arquivos estáticos
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
