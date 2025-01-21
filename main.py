@@ -46,6 +46,10 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 @app.get("/generate-slug")
 async def generate_new_slug():
     """Generate a new unique slug"""
